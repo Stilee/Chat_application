@@ -78,6 +78,7 @@ public class Login extends JFrame {
         //todo: add HANDLERS CHECKING IF INPUT IS PROPER
 
         JButton btnLogin = new JButton("Login");
+
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -89,12 +90,13 @@ public class Login extends JFrame {
         });
         btnLogin.setBounds(91, 311, 117, 29);
         contentPane.add(btnLogin);
+
     }
 
 
     private void login(String name, String address, int port){
         dispose();
-        new Client (name, address,port);
+        new Client (name, address, port);
 
     }
 

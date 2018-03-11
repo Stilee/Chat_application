@@ -1,6 +1,10 @@
 import java.awt.*;
+import java.awt.event.*;
+import java.io.IOException;
+import java.net.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.text.DefaultCaret;
 
 
 public class Client extends JFrame {
@@ -11,14 +15,56 @@ public class Client extends JFrame {
     private String name, address;
     private int port;
     private JTextField txtMessage;
+    private JTextArea history;
+    private DefaultCaret caret;
+
+    //TCP will be better
+    private DatagramSocket socket;
+    private InetAddress ip;
 
     public Client(String name, String address, int port) {
         setTitle("Cherno Chat Client");
         this.name = name;
         this.address = address;
         this.port = port;
+        boolean connect = openConnection(address, port);
+        if(!connect){
+            System.err.println("Connection failed!");
+            console("Connection failed");
+        }
         createWindow();
+        console("Attempting a connection to " + address + ":" + port + ", user:" + name);
+
     }
+
+
+    private boolean openConnection(String address, int port){
+        try{
+            socket = new DatagramSocket(port);
+            ip = InetAddress.getByName(address);
+        }catch (UnknownHostException e){
+            e.printStackTrace();
+            return false;
+        }catch (SocketException e){
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+    //TODO: do ogarnięcia
+    private String receive(){
+        byte[] data = new byte[1024];
+        DatagramPacket packet = new DatagramPacket(data,data.length);
+        try{
+            socket.receive(packet);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+        String message = new String(packet.getData());
+        return message;
+    }
+
 
     private void createWindow() {
         try {
@@ -40,23 +86,28 @@ public class Client extends JFrame {
         gbl_contentPane.rowWeights = new double[]{1.0, Double.MIN_VALUE};
         contentPane.setLayout(gbl_contentPane);
 
-        JTextArea txtrHistory = new JTextArea();
-        txtrHistory.setEditable(false);
-        GridBagConstraints gbc_txtrHistory = new GridBagConstraints();
-        gbc_txtrHistory.insets = new Insets(0, 0, 5, 5);
-        gbc_txtrHistory.fill = GridBagConstraints.BOTH;
-        gbc_txtrHistory.gridx = 1;
-        gbc_txtrHistory.gridy = 1;
-        gbc_txtrHistory.gridwidth = 2;
-        gbc_txtrHistory.insets = new Insets(0, 5, 0, 0);
-        contentPane.add(txtrHistory, gbc_txtrHistory);
+        history = new JTextArea();
+        history.setEditable(false);
+        caret = (DefaultCaret)history.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+        JScrollPane scroll = new JScrollPane(history);
+        GridBagConstraints scrollConstraints = new GridBagConstraints();
+        scrollConstraints.insets = new Insets(0, 0, 5, 5);
+        scrollConstraints.fill = GridBagConstraints.BOTH;
+        scrollConstraints.gridx = 0;
+        scrollConstraints.gridy = 0;
+        scrollConstraints.gridwidth = 3;
+        scrollConstraints.gridheight =2;
+        scrollConstraints.insets = new Insets(0, 5, 0, 0);
+        contentPane.add(scroll, scrollConstraints);
 
         txtMessage = new JTextField();
         GridBagConstraints gbc_txtMessage = new GridBagConstraints();
         gbc_txtMessage.insets = new Insets(0, 0, 0, 5);
         gbc_txtMessage.fill = GridBagConstraints.HORIZONTAL;
-        gbc_txtMessage.gridx = 1;
+        gbc_txtMessage.gridx = 0;
         gbc_txtMessage.gridy = 2;
+        gbc_txtMessage.gridwidth = 2;
         contentPane.add(txtMessage, gbc_txtMessage);
         txtMessage.setColumns(10);
 
@@ -68,6 +119,43 @@ public class Client extends JFrame {
         contentPane.add(btnSend, gbc_btnSend);
 
         setVisible(true);
+        txtMessage.requestFocusInWindow();
+
+
+        btnSend.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                send(txtMessage.getText());
+            }
+        });
+
+        txtMessage.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                    send(txtMessage.getText());
+                }
+            }
+        });
+
+
+
     }
+
+    public void console(String message){
+        history.append(message + "\n");
+        history.setCaretPosition(history.getDocument().getLength());
+    }
+
+    public void send (String message){
+        if(message.equals("")) return;
+        message = name +": "+ message;
+        console(message);
+        txtMessage.setText("");
+
+        txtMessage.requestFocusInWindow();
+    }
+
+
 
 }
