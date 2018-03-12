@@ -1,3 +1,4 @@
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
@@ -6,6 +7,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.DefaultCaret;
 
+//TODO: MAKE SEPERATE CLASS FOR GUI AND CLIENT
 
 public class Client extends JFrame {
     private static final long serialVersionUID = 1L;
