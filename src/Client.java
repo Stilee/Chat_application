@@ -14,37 +14,37 @@ public class Client extends JFrame {
 
     private JPanel contentPane;
 
-    private String name, address;
-    private int port;
     private JTextField txtMessage;
     private JTextArea history;
     private DefaultCaret caret;
 
     //TCP will be better
     private DatagramSocket socket;
+    private String name, address;
     private InetAddress ip;
-
+    private int port;
     private Thread send;
 
     public Client(String name, String address, int port) {
-        setTitle("Cherno Chat Client");
+        setTitle("Chat Client");
         this.name = name;
         this.address = address;
         this.port = port;
-        boolean connect = openConnection(address, port);
+        boolean connect = openConnection(address);
         if(!connect){
             System.err.println("Connection failed!");
             console("Connection failed");
         }
         createWindow();
         console("Attempting a connection to " + address + ":" + port + ", user:" + name);
-
+        String connection = name + " connected from " + address + ":" + port;
+        send(connection.getBytes());
     }
 
 
-    private boolean openConnection(String address, int port){
+    private boolean openConnection(String address){
         try{
-            socket = new DatagramSocket(port);
+            socket = new DatagramSocket();
             ip = InetAddress.getByName(address);
         }catch (UnknownHostException e){
             e.printStackTrace();
@@ -162,7 +162,7 @@ public class Client extends JFrame {
     }
 
     public void console(String message){
-        history.append(message + "\n");
+        history.append(message + "\n\r");
         history.setCaretPosition(history.getDocument().getLength());
     }
 
@@ -170,6 +170,7 @@ public class Client extends JFrame {
         if(message.equals("")) return;
         message = name +": "+ message;
         console(message);
+        send(message.getBytes());
         txtMessage.setText("");
 
         txtMessage.requestFocusInWindow();

@@ -49,7 +49,7 @@ public class Login extends JFrame {
         lblName.setBounds(127, 34, 45, 16);
         contentPane.add(lblName);
 
-        txtAddress = new JTextField("192.168.0.2");
+        txtAddress = new JTextField("localhost");
         txtAddress.setBounds(67, 116, 165, 28);
         contentPane.add(txtAddress);
         txtAddress.setColumns(10);
