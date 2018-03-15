@@ -37,7 +37,7 @@ public class Client extends JFrame {
         }
         createWindow();
         console("Attempting a connection to " + address + ":" + port + ", user:" + name);
-        String connection = name + " connected from " + address + ":" + port;
+        String connection = "/c/" + name;
         send(connection.getBytes());
     }
 
@@ -170,6 +170,7 @@ public class Client extends JFrame {
         if(message.equals("")) return;
         message = name +": "+ message;
         console(message);
+        message= "/m/" + message;
         send(message.getBytes());
         txtMessage.setText("");
 
