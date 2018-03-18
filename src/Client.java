@@ -15,6 +15,8 @@ public class Client{
     private int port;
     private Thread send;
 
+    private int ID =-1;
+
 
     public Client(String name, String address, int port){
         this.name = name;
@@ -51,7 +53,7 @@ public class Client{
     }
 
     //TODO: do ogarnięcia
-    private String receive(){
+    public String receive(){
         byte[] data = new byte[1024];
         DatagramPacket packet = new DatagramPacket(data,data.length);
         try{
@@ -60,6 +62,8 @@ public class Client{
             e.printStackTrace();
         }
         String message = new String(packet.getData());
+
+
         return message;
     }
 
@@ -79,5 +83,11 @@ public class Client{
 
     }
 
+    public void setID(int ID) {
+        this.ID=ID;
+    }
 
+    public int getID() {
+        return ID;
+    }
 }

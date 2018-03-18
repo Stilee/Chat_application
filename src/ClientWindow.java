@@ -7,13 +7,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class ClientWindow  extends JFrame{
+
+public class ClientWindow  extends JFrame implements Runnable{
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JTextField txtMessage;
     private JTextArea history;
     private DefaultCaret caret;
     private Client client;
+
+    private Thread run, listen;
+    private boolean running = false;
+
 
 
     public ClientWindow(String name, String address, int port) {
@@ -28,6 +33,9 @@ public class ClientWindow  extends JFrame{
         console("Attempting a connection to " + address + ":" + port + ", user:" + name);
         String connection = "/c/" + name;
         client.send(connection.getBytes());
+        run = new Thread(this, "Running");
+        running = true;
+        run.start();
     }
 
     private void createWindow() {
@@ -104,11 +112,31 @@ public class ClientWindow  extends JFrame{
 
     }
 
+    public void listen(){
+        listen = new Thread("Listen"){
+            public void run(){
+                while(true) {
+                    String message = client.receive();
+                    if (message.startsWith("")){
+                        client.setID(Integer.parseInt(message.split("/c/|/e/")[1]));
+                        console("Successfully connected to server! ID: " + client.getID());
+                    }
+                }
+            }
+        };
+        listen.start();
+    }
+
 
     public void console(String message){
         history.append(message + "\n\r");
         history.setCaretPosition(history.getDocument().getLength());
     }
+
+    public void run(){
+        listen();
+    }
+
 
     public void send (String message){
         if(message.equals("")) return;
