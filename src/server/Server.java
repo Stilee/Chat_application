@@ -1,14 +1,11 @@
 package server;
 
-import com.sun.deploy.util.SessionState;
-import sun.security.x509.UniqueIdentity;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.sql.ClientInfoStatus;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,12 +63,7 @@ public class Server implements Runnable {
                     }catch (IOException e){
                         e.printStackTrace();
                     }
-
-
                     process(packet);
-                    clients.add(new ServerClient("Bob", packet.getAddress(), packet.getPort(), 50));
-                    System.out.println(clients.get(0).address.toString() + ":" + clients.get(0).port);
-
                 }
 
 

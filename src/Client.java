@@ -63,7 +63,6 @@ public class Client{
         }
         String message = new String(packet.getData());
 
-
         return message;
     }
 
