@@ -1,6 +1,8 @@
 package server;
 
 
+import com.sun.deploy.util.SessionState;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -43,7 +45,7 @@ public class Server implements Runnable {
         manage = new Thread("Manage"){
             public void run(){
                 while(running){
-
+        
                     //********
 
                 }
@@ -111,9 +113,30 @@ public class Server implements Runnable {
 
         }else if(string.startsWith("/m/")){
             sendToAll(string);
+        }else if(string.startsWith("/d/")){
+            String id = string.split("/d/|/e/")[1];
+            disconnect(Integer.parseInt(id),true);
         }
         else{
             System.out.println(string);
         }
+    }
+
+    private void disconnect(int id,boolean status){
+        ServerClient c = null;
+        for(int i =0; i<clients.size(); i++){
+            if(clients.get(i).getID() ==id){
+                c =clients.get(i);
+                clients.remove(i);
+                break;
+            }
+        }
+        String message = "";
+        if(status){
+            message = "Client  " + c.name + " (" + c.getID() + ") @" + c.address.toString() + " :" + c.port + " disconnected.";
+        }else{
+            message = "Client  " + c.name + " (" + c.getID() + ") @" + c.address.toString() + " :" + c.port + " timed out.";
+        }
+        System.out.println(message);
     }
 }
