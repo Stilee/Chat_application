@@ -1,9 +1,5 @@
 package server;
 
-
-import com.sun.deploy.util.SessionState;
-import com.sun.org.apache.xpath.internal.SourceTree;
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -71,7 +67,7 @@ public class Server implements Runnable {
         manage = new Thread("Manage"){
             public void run(){
                 while(running){
-                    sendToAll("i/server");
+                    sendToAll("/i/server");
                     try {
                         Thread.sleep(2000);
                     } catch (InterruptedException e) {
